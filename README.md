@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="screenshots/banner.png" alt="SentinelShell Banner" width="900">
+</p>
+
 SentinelShell
 
 AI-Powered Terminal Session Logging, Redaction, Summaries & Syncing
