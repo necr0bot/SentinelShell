@@ -1,0 +1,17 @@
+# SentinelShell
+.gpt_sessions/
+*.log
+*.time
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor junk
+*~
+*.swp
+*.bak
+
+# Python venvs (if you build future wrappers)
+venv/
+.env/
