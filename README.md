@@ -5,10 +5,25 @@
 # SentinelShell
 AI-Powered Terminal Session Logging, Redaction, and Summaries
 
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Shell](https://img.shields.io/badge/Shell-Bash-blue)
-![Status](https://img.shields.io/badge/Status-Alpha-orange)
-![OpenAI](https://img.shields.io/badge/AI-OpenAI-yellow)
+<p align="center">
+
+  <!-- Your existing badges -->
+  <img src="https://img.shields.io/badge/License-MIT-green.svg">
+  <img src="https://img.shields.io/badge/Shell-Bash-blue">
+  <img src="https://img.shields.io/badge/Status-Alpha-orange">
+  <img src="https://img.shields.io/badge/AI-OpenAI-yellow">
+
+  <br>
+
+  <!-- GitHub dynamic badges -->
+  <img src="https://img.shields.io/github/v/release/necr0bot/SentinelShell?color=blue&label=Release">
+  <img src="https://img.shields.io/github/stars/necr0bot/SentinelShell?color=gold">
+  <img src="https://img.shields.io/github/issues/necr0bot/SentinelShell?color=red">
+  <img src="https://img.shields.io/github/last-commit/necr0bot/SentinelShell?color=purple">
+  <img src="https://img.shields.io/github/actions/workflow/status/necr0bot/SentinelShell/shellcheck.yml?label=ShellCheck">
+
+</p>
+
 
 ---
 
