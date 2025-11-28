@@ -1,4 +1,5 @@
 SentinelShell
+
 AI-Powered Terminal Session Logging, Redaction, Summaries & Syncing
 
 ---------------------
