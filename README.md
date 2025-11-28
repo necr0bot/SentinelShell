@@ -22,6 +22,7 @@ Perfect for CTF writeups, cybersecurity labs, demos, documentation, education, a
 ---------------------
 
 🚀 Features
+
 📼 Record full terminal sessions
 
 Uses script under the hood. No weird Tmux hacks.
@@ -76,6 +77,7 @@ gpt-session autosync-off ---> # Disable autosync
 ---------------------
 
 📦 Installation
+
 curl -sSL https://raw.githubusercontent.com/necr0bot/SentinelShell/main/install.sh | bash
 
 Or manual:
@@ -100,11 +102,16 @@ ripgrep
 ---------------------
 
 🧪 Quick Test
+
 gpt-session start
+
 echo "password = hunter2"
+
 echo "Authorization: Bearer 1234567890"
+
 gpt-session stop
 
+---------------------
 
 Check redactions:
 
@@ -113,8 +120,11 @@ cat ~/.gpt_sessions/<latest>.log.redacted
 ---------------------
 
 🛠 Development
+
 git clone https://github.com/necr0bot/SentinelShell
+
 cd SentinelShell
+
 ./gpt-session --version
 
 ---------------------
@@ -171,6 +181,7 @@ See: contributing.md
 ---------------------
 
 ✔ Status
+
 Stable — Ready for daily use.
 
 ---------------------
