@@ -1,4 +1,4 @@
-# SentinelShell
+# SentinelShell session data
 .gpt_sessions/
 *.log
 *.time
@@ -7,11 +7,12 @@
 .DS_Store
 Thumbs.db
 
-# Editor junk
+# Editor backups
 *~
 *.swp
 *.bak
 
-# Python venvs (if you build future wrappers)
+# Python virtual environments (future wrappers)
 venv/
 .env/
+.venv/
