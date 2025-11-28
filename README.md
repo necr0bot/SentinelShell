@@ -1,6 +1,7 @@
 <p align="center">
-  <img src="screenshots/sentinelshell_banner.png" alt="SentinelShell Banner" width="900">
+  <img src="https://raw.githubusercontent.com/necr0bot/SentinelShell/main/screenshots/sentinelshell_banner_neon.png" alt="SentinelShell Neon Banner">
 </p>
+
 
 # SentinelShell
 AI-Powered Terminal Session Logging, Redaction, and Summaries
