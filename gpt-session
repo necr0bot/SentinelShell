@@ -347,7 +347,7 @@ case "$1" in
         echo "gpt-session $VERSION"
         ;;
     *)
-        echo "Usage: gpt-session {start|stop|sync|autosync-on|autosync-off|autosync-status|replay|status|profile|--version}"
+        echo "Usage: gpt-session {start|stop|sync|autosync-on|autosync-off|autosync-status|replay|status|profile|--version|-v}"
         exit 1
         ;;
 esac
