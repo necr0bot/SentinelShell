@@ -2,10 +2,6 @@
   <img src="screenshots/sentinelshell_banner.png" alt="SentinelShell Banner" width="900">
 </p>
 
-SentinelShell
-
-AI-Powered Terminal Session Logging, Redaction, Summaries & Syncing
-
 ---------------------
 
 SentinelShell is a drop-in terminal enhancer that automatically:
