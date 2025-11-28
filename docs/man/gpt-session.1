@@ -1,0 +1,41 @@
+.TH GPT-SESSION 1 "2025-11-28" "SentinelShell"
+
+.SH NAME
+gpt-session - AI-augmented terminal session recorder for pentesters
+
+.SH SYNOPSIS
+gpt-session [command]
+
+.SH DESCRIPTION
+SentinelShell integrates OpenAI with Bash to record, summarize, redact, sync, and replay terminal sessions.
+
+.SH COMMANDS
+.TP
+start
+Start logging a session.
+
+.TP
+stop
+Stop logging and generate an AI summary.
+
+.TP
+sync
+Upload the session log to ChatGPT.
+
+.TP
+autosync-on N
+Enable autosync every N minutes.
+
+.TP
+autosync-off
+Disable autosync.
+
+.TP
+replay
+Replay the last recorded session using scriptreplay.
+
+.SH FILES
+~/.gpt_sessions/
+
+.SH AUTHOR
+necr0bot
