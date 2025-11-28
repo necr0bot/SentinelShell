@@ -1,35 +1,34 @@
 #!/bin/bash
-#
-# gpt-session: full terminal session logger + autosync + summary + sync via OpenAI CLI
-#
-# Compatible with the Debian/Kali-patched "openai 2.x" CLI format:
-#   openai api chat.completions.create -m MODEL -g ROLE CONTENT [-g ROLE CONTENT ...]
-#
-#
-# SentinelShell / gpt-session version
+
 VERSION="0.1.0"
 
-# Version flag
+#Handle version
 if [[ "$1" == "--version" || "$1" == "-v" ]]; then
     echo "gpt-session $VERSION"
     exit 0
 fi
 
+# gpt-session: full terminal session logger + autosync + summary + sync via OpenAI CLI
+#
+# Compatible with the Debian/Kali-patched "openai 2.x" CLI format:
+#   openai api chat.completions.create -m MODEL -g ROLE CONTENT [-g ROLE CONTENT ...]
+#
 
 SESS_DIR="$HOME/.gpt_sessions"
 PID_FILE="$SESS_DIR/session.pid"
 AUTOSYNC_PID_FILE="$SESS_DIR/autosync.pid"
 PROFILE_FILE="$SESS_DIR/profile.txt"
 OPENAI_MODEL="gpt-4o-mini"
+
 mkdir -p "$SESS_DIR"
 
-
 ##############################################
-# PROJECT DETECTION (TryHackMe directory aware)
+# PROJECT DETECTION (e.g. TryHackMe-style paths)
 ##############################################
 get_project() {
     case "$PWD" in
         *"/thm/"*)
+            # Extract folder name after /thm/
             echo "$PWD" | sed -n 's|.*/thm/\([^/]*\).*|\1|p'
             ;;
         *)
@@ -38,22 +37,28 @@ get_project() {
     esac
 }
 
-
 ##############################################
 # REDACT SENSITIVE MATERIAL
 ##############################################
 redact_stream() {
     sed -E '
         s/(password|passwd|pwd|secret|token)[[:space:]]*[:=][[:space:]]*[^[:space:]]+/\1: [REDACTED]/Ig;
-        s/(Authorization: Bearer )[A-Za-z0-9\._-]+/\1[REDACTED]/g;
-        s/(OPENAI_API_KEY=)[A-Za-z0-9\._-]+/\1[REDACTED]/g;
-        s/(api_key=)[A-Za-z0-9\._-]+/\1[REDACTED]/g;
+        s/(Authorization: Bearer )[A-Za-z0-9._-]+/\1[REDACTED]/g;
+        s/(OPENAI_API_KEY=)[A-Za-z0-9._-]+/\1[REDACTED]/g;
+        s/(api_key=)[A-Za-z0-9._-]+/\1[REDACTED]/g;
         s/([0-9]{1,3}\.){3}[0-9]{1,3}/[REDACTED_IP]/g;
         s/-----BEGIN [^-]*PRIVATE KEY-----/-----BEGIN PRIVATE KEY [REDACTED]-----/g;
         s/-----END [^-]*PRIVATE KEY-----/-----END PRIVATE KEY [REDACTED]-----/g;
     '
 }
 
+##############################################
+# GET LATEST LOG FILE (NEWEST BY MOD TIME)
+##############################################
+latest_log_file() {
+    find "$SESS_DIR" -maxdepth 1 -type f -name "*.log" -printf "%T@ %p\n" \
+        | sort -nr | head -n1 | cut -d' ' -f2-
+}
 
 ##############################################
 # START A LOGGING SESSION
@@ -82,7 +87,6 @@ start_session() {
     echo "[+] Logging active."
 }
 
-
 ##############################################
 # STOP A LOGGING SESSION + AUTO SUMMARY
 ##############################################
@@ -94,7 +98,7 @@ stop_session() {
 
     read -r PID LOGFILE TIMEFILE < "$PID_FILE"
     echo "[+] Stopping logging session (PID $PID)..."
-    kill "$PID" 2>/dev/null
+    kill "$PID" 2>/dev/null || true
     rm -f "$PID_FILE"
 
     echo "[+] Session saved:"
@@ -109,19 +113,19 @@ stop_session() {
     SUMMARY_FILE="$LOGFILE.summary.md"
     REDACTED="$(mktemp "$SESS_DIR/summary_redacted.XXXXXX")"
 
+    # Redact and truncate to 16000 bytes to avoid giant prompts
     redact_stream < "$LOGFILE" | head -c 16000 > "$REDACTED"
 
     echo "[+] Generating summary with OpenAI…"
 
     openai api chat.completions.create \
         -m "$OPENAI_MODEL" \
-        -g system "Summarize this terminal session. Include: what I ran, errors I hit, progress, next steps." \
+        -g system "Summarize this terminal session. Include: what I ran, errors I hit, progress, and suggested next steps." \
         -g user "$(cat "$REDACTED")" \
         > "$SUMMARY_FILE" 2>/dev/null
 
     echo "[+] Summary written to: $SUMMARY_FILE"
 }
-
 
 ##############################################
 # MANUAL SYNC TO CHATGPT
@@ -135,10 +139,10 @@ sync_session() {
     if [ -n "$1" ]; then
         LOGFILE="$1"
     else
-        LOGFILE=$(ls -1t "$SESS_DIR"/*.log | head -n1)
+        LOGFILE=$(latest_log_file)
     fi
 
-    if [ ! -f "$LOGFILE" ]; then
+    if [ -z "$LOGFILE" ] || [ ! -f "$LOGFILE" ]; then
         echo "[-] No log file found."
         exit 1
     fi
@@ -149,7 +153,7 @@ sync_session() {
         if [ -f "$PROFILE_FILE" ]; then
             echo "PROFILE:"
             cat "$PROFILE_FILE"
-            echo -e "\n-----\n"
+            printf "\n-----\n\n"
         fi
         echo "SESSION LOG:"
         redact_stream < "$LOGFILE"
@@ -159,13 +163,12 @@ sync_session() {
 
     openai api chat.completions.create \
         -m "$OPENAI_MODEL" \
-        -g system "Update your internal context with this session log. Do not reply to the user." \
+        -g system "Update your internal understanding of my ongoing work based on this log. Do not respond to the user." \
         -g user "$(cat "$REDACTED")" \
         >/dev/null 2>&1
 
     echo "[+] Sync complete."
 }
-
 
 ##############################################
 # QUIET SYNC FOR AUTOSYNC
@@ -175,30 +178,31 @@ sync_session_quiet() {
         return
     fi
 
-    LOGFILE=$(ls -1t "$SESS_DIR"/*.log | head -n1)
-    [ -f "$LOGFILE" ] || return
+    LOGFILE=$(latest_log_file)
+    if [ -z "$LOGFILE" ] || [ ! -f "$LOGFILE" ]; then
+        return
+    fi
 
     REDACTED="$(mktemp "$SESS_DIR/autosync_redacted.XXXXXX")"
 
     {
-        [ -f "$PROFILE_FILE" ] && {
+        if [ -f "$PROFILE_FILE" ]; then
             echo "PROFILE:"
             cat "$PROFILE_FILE"
-            echo -e "\n-----\n"
-        }
+            printf "\n-----\n\n"
+        fi
         echo "SESSION LOG:"
-        cat "$LOGFILE" | redact_stream
+        redact_stream < "$LOGFILE"
     } > "$REDACTED"
 
     AUTOSYNC_LOG="$SESS_DIR/autosync.log"
 
     openai api chat.completions.create \
         -m "$OPENAI_MODEL" \
-        -g system "Periodic autosync. Update internal state silently." \
+        -g system "Periodic autosync of terminal activity. Update your internal state silently; do not respond to the user." \
         -g user "$(cat "$REDACTED")" \
         >> "$AUTOSYNC_LOG" 2>&1
 }
-
 
 ##############################################
 # AUTOSYNC CONTROLLER
@@ -214,7 +218,10 @@ autosync_start() {
 
     (
         while true; do
-            [ -f "$PID_FILE" ] && sync_session_quiet
+            # Only sync if a session is/was running and logs exist
+            if [ -f "$PID_FILE" ] || [ -n "$(latest_log_file)" ]; then
+                sync_session_quiet
+            fi
             sleep "$((INTERVAL_MIN * 60))"
         done
     ) &
@@ -230,7 +237,7 @@ autosync_off() {
     fi
 
     read -r PID _ < "$AUTOSYNC_PID_FILE"
-    kill "$PID" 2>/dev/null
+    kill "$PID" 2>/dev/null || true
     rm -f "$AUTOSYNC_PID_FILE"
     echo "[+] Autosync stopped."
 }
@@ -241,7 +248,7 @@ autosync_status() {
         if kill -0 "$PID" 2>/dev/null; then
             echo "[+] Autosync running every $N minutes. PID $PID"
         else
-            echo "[!] Autosync PID stale. Cleaning up."
+            echo "[!] Autosync PID appears stale. Cleaning up."
             rm -f "$AUTOSYNC_PID_FILE"
         fi
     else
@@ -249,16 +256,14 @@ autosync_status() {
     fi
 }
 
-
 ##############################################
 # REPLAY SESSION
 ##############################################
 replay_session() {
-    LOGFILE=$(find "$SESS_DIR" -maxdepth 1 -type f -name "*.log" -printf "%T@ %p\n" \
-    | sort -nr | head -n1 | cut -d' ' -f2-)
+    LOGFILE=$(latest_log_file)
     TIMEFILE="${LOGFILE%.log}.time"
 
-    if [ ! -f "$LOGFILE" ] || [ ! -f "$TIMEFILE" ]; then
+    if [ -z "$LOGFILE" ] || [ ! -f "$LOGFILE" ] || [ ! -f "$TIMEFILE" ]; then
         echo "[-] Missing log/timing files."
         exit 1
     fi
@@ -267,9 +272,8 @@ replay_session() {
     scriptreplay "$TIMEFILE" "$LOGFILE"
 }
 
-
 ##############################################
-# PROFILE BUILDER
+# PROFILE BUILDER (GENERIC TEMPLATE)
 ##############################################
 init_profile() {
     if [ -f "$PROFILE_FILE" ]; then
@@ -279,35 +283,72 @@ init_profile() {
 
     cat > "$PROFILE_FILE" << 'EOF'
 # SentinelShell Profile
-# This file stores user preferences and context.
-# Edit this file to customize how SentinelShell behaves.
+# This file stores user preferences and context used when summarizing or syncing logs.
+# Edit anything below to better describe your environment and workflow.
 
 I am a SentinelShell user.
+
 I prefer:
-- Clean terminal session logs
-- Automatic redaction of secrets
-- Optional autosync
-- Context-aware hints when I type "help" or "hint"
+- Clear terminal session logs
+- Automatic redaction of sensitive information
+- Optional autosync to keep external context updated
+- Helpful, context-aware hints when I ask for help
+
+# You may optionally describe your tools and workflows here, for example:
+# - I use Kali Linux for CTFs and pentesting.
+# - I keep per-room folders under ~/thm/<room>/recon.
+# - I frequently use: nmap, ffuf, gobuster, dirb, nikto, curl, dig, mysql.
+
+# You can also define environment-style hints for future features, e.g.:
+# PROJECT_PREFIX=thm
 EOF
 
     echo "[+] Created profile: $PROFILE_FILE"
 }
 
-
 ##############################################
 # COMMAND DISPATCHER
 ##############################################
 case "$1" in
-    start)            start_session ;;
-    stop)             stop_session ;;
-    sync)             shift; sync_session "$@" ;;
-    autosync-on)      shift; autosync_start "$@" ;;
-    autosync-off)     autosync_off ;;
-    autosync-status)  autosync_status ;;
-    replay)           replay_session ;;
-    status)           [ -f "$PID_FILE" ] && echo "[+] Session running" || echo "[-] No session" ;;
-    profile)          init_profile ;;
+    start)
+        start_session
+        ;;
+    stop)
+        stop_session
+        ;;
+    sync)
+        shift
+        sync_session "$@"
+        ;;
+    autosync-on)
+        shift
+        autosync_start "$@"
+        ;;
+    autosync-off)
+        autosync_off
+        ;;
+    autosync-status)
+        autosync_status
+        ;;
+    replay)
+        replay_session
+        ;;
+    status)
+        if [ -f "$PID_FILE" ]; then
+            echo "[+] Session running."
+        else
+            echo "[-] No session."
+        fi
+        ;;
+    profile)
+        init_profile
+        ;;
+    --version|-v)
+        echo "gpt-session $VERSION"
+        ;;
     *)
-        echo "Usage: gpt-session {start|stop|sync|autosync-on|autosync-off|autosync-status|replay|status|profile}"
+        echo "Usage: gpt-session {start|stop|sync|autosync-on|autosync-off|autosync-status|replay|status|profile|--version}"
+        exit 1
         ;;
 esac
+       
