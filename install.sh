@@ -1,17 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-echo "[+] Installing SentinelShell..."
+set -e
 
-if ! command -v openai >/dev/null 2>&1; then
-    echo "[-] OpenAI CLI not found. Install with:"
-    echo "    pipx install openai"
-    exit 1
+echo "[SentinelShell] Installing..."
+
+# Ensure dependencies
+if ! command -v pipx >/dev/null 2>&1; then
+    echo "[+] Installing pipx..."
+    sudo apt install -y pipx || sudo pacman -S pipx || brew install pipx
 fi
 
-sudo cp gpt-session /usr/local/bin/
-sudo chmod +x /usr/local/bin/gpt-session
+echo "[+] Installing OpenAI CLI..."
+pipx install openai --force
 
-mkdir -p ~/.gpt_sessions
+echo "[+] Installing ripgrep..."
+sudo apt install -y ripgrep || sudo pacman -S ripgrep || brew install ripgrep
 
-echo "[+] Installation complete!"
-echo "[+] Run: gpt-session start"
+echo "[+] Installing gpt-session..."
+chmod +x gpt-session
+sudo mv gpt-session /usr/local/bin/
+
+echo "[✓] Installation complete!"
+
