@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="screenshots/banner.png" alt="SentinelShell Banner" width="900">
+  <img src="screenshots/sentinelshell_banner.png" alt="SentinelShell Banner" width="900">
 </p>
 
 SentinelShell
