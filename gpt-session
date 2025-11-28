@@ -109,7 +109,7 @@ stop_session() {
     SUMMARY_FILE="$LOGFILE.summary.md"
     REDACTED="$(mktemp "$SESS_DIR/summary_redacted.XXXXXX")"
 
-    cat "$LOGFILE" | redact_stream | head -c 16000 > "$REDACTED"
+    redact_stream < "$LOGFILE" | head -c 16000 > "$REDACTED"
 
     echo "[+] Generating summary with OpenAI…"
 
@@ -152,7 +152,7 @@ sync_session() {
             echo -e "\n-----\n"
         fi
         echo "SESSION LOG:"
-        cat "$LOGFILE" | redact_stream
+        redact_stream < "$LOGFILE"
     } > "$REDACTED"
 
     echo "[+] Syncing $LOGFILE to ChatGPT…"
@@ -254,7 +254,8 @@ autosync_status() {
 # REPLAY SESSION
 ##############################################
 replay_session() {
-    LOGFILE=$(ls -1t "$SESS_DIR"/*.log | head -n1)
+    LOGFILE=$(find "$SESS_DIR" -maxdepth 1 -type f -name "*.log" -printf "%T@ %p\n" \
+    | sort -nr | head -n1 | cut -d' ' -f2-)
     TIMEFILE="${LOGFILE%.log}.time"
 
     if [ ! -f "$LOGFILE" ] || [ ! -f "$TIMEFILE" ]; then
@@ -277,11 +278,15 @@ init_profile() {
     fi
 
     cat > "$PROFILE_FILE" << 'EOF'
-I am necrobot, a cybersecurity learner using Kali Linux for TryHackMe/HTB/picoCTF.
+# SentinelShell Profile
+# This file stores user preferences and context.
+# Edit this file to customize how SentinelShell behaves.
+
+I am a SentinelShell user.
 I prefer:
-- Per-room recon folders in ~/thm/<room>/recon
-- Tools: nmap, ffuf, gobuster, dirb, nikto, curl, dig, mysql
-- Step-by-step guidance, but not overly automated
+- Clean terminal session logs
+- Automatic redaction of secrets
+- Optional autosync
 - Context-aware hints when I type "help" or "hint"
 EOF
 
