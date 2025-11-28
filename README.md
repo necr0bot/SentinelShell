@@ -1,4 +1,3 @@
-
 # SentinelShell  
 AI-Augmented Terminal Logging for Pentesters
 
@@ -51,34 +50,155 @@ Perfect for:
 ```bash
 pipx install openai
 pipx ensurepath
-```
+````
+
 ### 2. Install SentinelShell
+
 ```bash
 chmod +x install.sh
 sudo ./install.sh
 ```
+
 ### 3. Configure API Key
+
 ```bash
 export OPENAI_API_KEY="sk-xxxx"
 echo 'export OPENAI_API_KEY="sk-xxxx"' >> ~/.zshrc
 ```
+
 ### 4. Start a session
+
 ```bash
 gpt-session start
 ```
+
 ### 5. Stop + summarize
+
 ```bash
 gpt-session stop
 ```
+
 ### 6. Replay
+
 ```bash
 gpt-session replay
 ```
+
 ### 7. Sync manually
+
 ```bash
 gpt-session sync
 ```
+
 ### 8. Enable autosync (every 30 min)
+
 ```bash
-gpt-session autosync-on 30   <----or whatever number, in minutes, you prefer
+gpt-session autosync-on 30
 ```
+
+---
+
+## 📦 File Structure
+
+```
+SentinelShell/
+├── gpt-session
+├── install.sh
+├── README.md
+├── LICENSE
+├── changelog.md
+├── contributing.md
+├── docs/
+│   └── index.md
+├── man/
+│   └── gpt-session.1
+└── screenshots/
+    └── logo.png
+```
+
+---
+
+## 📚 Documentation
+
+GitHub Pages (auto-generated):
+
+👉 [https://necr0bot.github.io/SentinelShell](https://necr0bot.github.io/SentinelShell)
+
+---
+
+## 🎮 Example Workflow
+
+```bash
+$ gpt-session start
+[+] Session recording started...
+
+$ nmap -sC -sV 10.10.10.10
+# ... scanning output ...
+
+$ gobuster dir -u http://10.10.10.10 -w /usr/share/wordlists/...
+# ... enumeration output ...
+
+$ gpt-session stop
+[+] Session saved.
+[+] Generating summary with OpenAI...
+[+] Summary written to: general_20250101-123455.log.summary.md
+```
+
+---
+
+## 🎨 Badges
+
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Shell](https://img.shields.io/badge/Bash-Script-blue)
+![OpenAI](https://img.shields.io/badge/AI-OpenAI-yellow)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+
+---
+
+## 🛠️ Development
+
+### Run from local copy:
+
+```bash
+./gpt-session start
+```
+
+### Install from local copy:
+
+```bash
+sudo install -m755 gpt-session /usr/local/bin/
+```
+
+---
+
+## 🤝 Contributing
+
+PRs welcome!
+
+See: [CONTRIBUTING.md](contributing.md)
+
+---
+
+## 📝 Changelog
+
+See: [CHANGELOG.md](changelog.md)
+
+---
+
+## 📜 License
+
+MIT License
+Copyright (c) 2025
+
+---
+
+## ❤️ Support
+
+If you like SentinelShell, please:
+
+* ⭐ Star the repository
+* 🗣️ Share it
+* 🐛 Report issues
+* 🔧 Submit PRs
+
+---
