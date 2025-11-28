@@ -1,6 +1,4 @@
 # Changelog
-
-# Changelog
 All notable changes to **SentinelShell** will be documented in this file.
 
 This project follows **Semantic Versioning** (https://semver.org/).
