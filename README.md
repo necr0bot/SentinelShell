@@ -72,6 +72,7 @@ This will:
 export OPENAI_API_KEY="sk-xxxx"
 echo 'export OPENAI_API_KEY="sk-xxxx"' >> ~/.zshrc   # or ~/.bashrc
 ```
+Don't be a dumb dumb and just copypasta. Actually set your API key here.
 
 ---
 
