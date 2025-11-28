@@ -1,204 +1,142 @@
-# SentinelShell  
-AI-Augmented Terminal Logging for Pentesters
+SentinelShell
+AI-Powered Terminal Session Logging, Redaction, Summaries & Syncing
 
-![logo](screenshots/logo.png)
+SentinelShell is a drop-in terminal enhancer that automatically:
 
----
+📜 Records your terminal session
 
-## 🛡️ What is SentinelShell?
+🔍 Scrubs secrets in real-time
 
-**SentinelShell** brings AI directly into your Linux terminal workflow.
+🤖 Generates AI summaries using OpenAI’s CLI
 
-It automatically:
+🔄 Optional: Auto-syncs your logs
 
-- 📜 **Records your entire terminal session**
-- 🔐 **Redacts sensitive data** (passwords, API keys, tokens, IPs)
-- 🧠 **Generates AI summaries** after each session
-- 🔁 **Replays everything** using `scriptreplay`
-- ☁️ **Syncs logs to ChatGPT** via the OpenAI CLI
-- 🧭 **Understands TryHackMe / HTB / CTF workflows**
-- 💡 Provides **contextual hints** when you ask for help
+🧠 Optional: Creates context profiles for ChatGPT
 
-Perfect for:
+🛑 Lets you pause, stop, replay, or summarize sessions at will
 
-- Pentesters  
-- Red-team operators  
-- Bug bounty hunters  
-- CTF players  
-- Cybersecurity students  
-- Anyone who wants ChatGPT *inside the terminal*
+Perfect for CTF writeups, cybersecurity labs, demos, documentation, education, and research.
 
----
+🚀 Features
+📼 Record full terminal sessions
 
-## ✨ Features
+Uses script under the hood. No weird Tmux hacks.
 
-- Full terminal session logging (`script`)
-- Automatic redaction of secrets
-- AI-powered summaries via OpenAI CLI
-- Autosync every N minutes
-- Manual sync option
-- Session replay
-- Profile persistence
-- THM room detection
-- Zero dependencies — pure Bash
+🧼 Real-time secret redaction
 
----
+Built-in patterns remove:
 
-## 🏁 Quickstart
+passwords
 
-### 1. Install the OpenAI CLI
-```bash
-pipx install openai
-pipx ensurepath
-````
+secrets
 
-### 2. Install SentinelShell
+API keys
 
-```bash
-chmod +x install.sh
-sudo ./install.sh
-```
+Authorization: Bearer tokens
 
-### 3. Configure API Key
+VPN IPs
 
-```bash
-export OPENAI_API_KEY="sk-xxxx"
-echo 'export OPENAI_API_KEY="sk-xxxx"' >> ~/.zshrc
-```
+env vars
 
-### 4. Start a session
+🧠 AI summaries of your work
 
-```bash
-gpt-session start
-```
+At session end:
 
-### 5. Stop + summarize
-
-```bash
 gpt-session stop
-```
 
-### 6. Replay
 
-```bash
-gpt-session replay
-```
+→ Creates:
+session.log.summary.md
 
-### 7. Sync manually
+🕹 Commands
+gpt-session start         # Begin logging
+gpt-session stop          # Stop and summarize
+gpt-session replay        # Replay the session
+gpt-session profile       # Generate ChatGPT context
+gpt-session sync          # Upload log via OpenAI CLI
+gpt-session autosync-on   # Auto-sync every N minutes
+gpt-session autosync-off  # Disable autosync
 
-```bash
+📦 Installation
+curl -sSL https://raw.githubusercontent.com/necr0bot/SentinelShell/main/install.sh | bash
+
+
+Or manual:
+
+chmod +x gpt-session
+sudo mv gpt-session /usr/local/bin/
+
+
+Requires:
+
+Bash or Zsh
+
+script (preinstalled on Linux/macOS)
+
+pipx
+
+OpenAI CLI
+
+ripgrep
+
+🧪 Quick Test
+gpt-session start
+echo "password = hunter2"
+echo "Authorization: Bearer 1234567890"
+gpt-session stop
+
+
+Check redactions:
+
+cat ~/.gpt_sessions/<latest>.log.redacted
+
+🛠 Development
+git clone https://github.com/necr0bot/SentinelShell
+cd SentinelShell
+./gpt-session --version
+
+🔒 Security
+
+SentinelShell never transmits raw logs unless:
+
 gpt-session sync
-```
 
-### 8. Enable autosync (every 30 min)
 
-```bash
-gpt-session autosync-on 30
-```
+You remain in complete control.
 
----
+📄 License
 
-## 📦 File Structure
+MIT License — free for personal + commercial.
 
-```
-SentinelShell/
-├── gpt-session
-├── install.sh
-├── README.md
-├── LICENSE
-├── changelog.md
-├── contributing.md
-├── docs/
-│   └── index.md
-├── man/
-│   └── gpt-session.1
-└── screenshots/
-    └── logo.png
-```
+🗺 Roadmap
 
----
+macOS auto-installer
 
-## 📚 Documentation
+pip wrapper for pipx install sentinelshell
 
-GitHub Pages (auto-generated):
+brew formula
 
-👉 [https://necr0bot.github.io/SentinelShell](https://necr0bot.github.io/SentinelShell)
+AUR package
 
----
+Windows PowerShell version
 
-## 🎮 Example Workflow
+Multi-language redaction rules
 
-```bash
-$ gpt-session start
-[+] Session recording started...
+Optional encrypted session storage
 
-$ nmap -sC -sV 10.10.10.10
-# ... scanning output ...
+Web dashboard for logs
 
-$ gobuster dir -u http://10.10.10.10 -w /usr/share/wordlists/...
-# ... enumeration output ...
+Plugin system
 
-$ gpt-session stop
-[+] Session saved.
-[+] Generating summary with OpenAI...
-[+] Summary written to: general_20250101-123455.log.summary.md
-```
+🛡 Maintainer
 
----
+necr0bot
+Sentinel of terminals. Hunter of secrets. Friend of AI.
 
-## 🎨 Badges
+⭐ Contributing
 
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Shell](https://img.shields.io/badge/Bash-Script-blue)
-![OpenAI](https://img.shields.io/badge/AI-OpenAI-yellow)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+See: contributing.md
 
----
+✔ Status
 
-## 🛠️ Development
-
-### Run from local copy:
-
-```bash
-./gpt-session start
-```
-
-### Install from local copy:
-
-```bash
-sudo install -m755 gpt-session /usr/local/bin/
-```
-
----
-
-## 🤝 Contributing
-
-PRs welcome!
-
-See: [CONTRIBUTING.md](contributing.md)
-
----
-
-## 📝 Changelog
-
-See: [CHANGELOG.md](changelog.md)
-
----
-
-## 📜 License
-
-MIT License
-Copyright (c) 2025
-
----
-
-## ❤️ Support
-
-If you like SentinelShell, please:
-
-* ⭐ Star the repository
-* 🗣️ Share it
-* 🐛 Report issues
-* 🔧 Submit PRs
-
----
+Stable — Ready for daily use.
