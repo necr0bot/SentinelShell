@@ -1,217 +1,252 @@
+# SentinelShell
+
 <p align="center">
-  <img src="https://raw.githubusercontent.com/necr0bot/SentinelShell/main/screenshots/sentinelshell_banner_neon.png" alt="SentinelShell Neon Banner">
+  <img src="https://raw.githubusercontent.com/necr0bot/SentinelShell/main/screenshots/sentinelshell_banner_neon.png" alt="SentinelShell Banner">
 </p>
 
-
-# SentinelShell
-AI-Powered Terminal Session Logging, Redaction, and Summaries
-
 <p align="center">
-
-  <!-- Your existing badges -->
   <img src="https://img.shields.io/badge/License-MIT-green.svg">
   <img src="https://img.shields.io/badge/Shell-Bash-blue">
   <img src="https://img.shields.io/badge/Status-Alpha-orange">
   <img src="https://img.shields.io/badge/AI-OpenAI-yellow">
-
+  
   <br>
 
-  <!-- GitHub dynamic badges -->
   <img src="https://img.shields.io/github/v/release/necr0bot/SentinelShell?color=blue&label=Release">
   <img src="https://img.shields.io/github/stars/necr0bot/SentinelShell?color=gold">
   <img src="https://img.shields.io/github/issues/necr0bot/SentinelShell?color=red">
   <img src="https://img.shields.io/github/last-commit/necr0bot/SentinelShell?color=purple">
   <img src="https://img.shields.io/github/actions/workflow/status/necr0bot/SentinelShell/shellcheck.yml?label=ShellCheck">
-
 </p>
 
+---
+
+# Overview
+
+SentinelShell is an AI-powered terminal assistant that automatically logs your sessions, summarizes them, redacts secrets, replays activity, and optionally syncs context back to ChatGPT.
+
+It is designed for:
+
+- CTF players  
+- Penetration testers  
+- Linux power users  
+- Researchers  
+- Productivity hackers  
+
+You stay in control — the AI just helps.
 
 ---
 
-## What is SentinelShell?
+# Features
 
-SentinelShell is a terminal companion script that automatically:
+### AI Session Summaries
+Automatically generate summaries detailing commands, errors, progress, and next steps.
 
-- Records your terminal sessions
-- Scrubs secrets using a redaction pipeline
-- Generates AI summaries using the OpenAI CLI
-- Allows replay, syncing, and autosync
-- Builds a context profile for ChatGPT conversations
+### Sensitive Data Redaction
+Redacts:
+- passwords  
+- tokens  
+- API keys  
+- bearer tokens  
+- IP addresses  
+- private keys  
 
-Ideal for:
+Before anything is synced.
 
-- Pentesting
-- CTF / TryHackMe / HackTheBox sessions
-- Documentation and research
-- Learning and workflow journaling
+### Session Replay  
+Replay your terminal exactly as it happened.
+
+### Autosync  
+Background sync to ChatGPT every N minutes.
+
+### Project Detection  
+Auto-detects TryHackMe/HTB-style folders like:
+
+```
+~/thm/<room>/
+```
+
+### Profile System  
+Customizable preferences stored in:
+
+```
+~/.gpt_sessions/profile.txt
+```
 
 ---
 
-## Features
+# Installation
 
-- Full terminal session recording (`script`)
-- Intelligent secret redaction (passwords, tokens, API keys, bearer headers, etc.)
-- OpenAI-generated summaries
-- Session replay using `scriptreplay`
-- Manual sync via OpenAI CLI
-- Autosync every N minutes (optional)
-- Profile generator for ChatGPT context
-- Works with Bash, Zsh, and most Linux environments
-
----
-
-## Installation
-
-### 1. Clone repo
+Clone:
 
 ```
 git clone https://github.com/necr0bot/SentinelShell.git
 cd SentinelShell
 ```
 
-### 2. Run installer
+Install:
 
 ```
-chmod +x install.sh
-./install.sh
+sudo bash install.sh
 ```
 
-This will:
-
-- Install pipx
-- Install OpenAI CLI
-- Install ripgrep (rg)
-- Install gpt-session into /usr/local/bin
-
-### 3. Set API key
-
-```
-export OPENAI_API_KEY="sk-xxxx"
-echo 'export OPENAI_API_KEY="sk-xxxx"' >> ~/.zshrc
-```
-*Make sure you insert your API key here and don't just copypasta*
+This installs:
+- /usr/local/bin/gpt-session  
+- man page  
+- ~/.gpt_sessions/  
 
 ---
 
-## Usage
+# Usage
 
-### Start logging
+Start logging:
 
 ```
 gpt-session start
 ```
 
-### Stop + summarize
+Stop logging:
 
 ```
 gpt-session stop
 ```
 
-This produces:
-
-- <session>.log (raw)
-- <session>.log.redacted
-- <session>.log.summary.md
-
-### Replay session
+Replay:
 
 ```
 gpt-session replay
 ```
 
-### Generate profile
+Status:
+
+```
+gpt-session status
+```
+
+---
+
+# Redaction
+
+The redaction pipeline replaces:
+
+```
+password = xyz      → password = [REDACTED]
+Authorization: Bearer abc → Authorization: Bearer [REDACTED]
+OPENAI_API_KEY=xxxx → OPENAI_API_KEY=[REDACTED]
+IP addresses        → [REDACTED_IP]
+Private keys        → [REDACTED]
+```
+
+See full documentation in `docs/redaction.md`.
+
+---
+
+# Autosync
+
+Enable autosync:
+
+```
+gpt-session autosync-on 30
+```
+
+Disable:
+
+```
+gpt-session autosync-off
+```
+
+Status:
+
+```
+gpt-session autosync-status
+```
+
+---
+
+# Profile System
+
+Initialize profile:
 
 ```
 gpt-session profile
 ```
 
-### Sync to ChatGPT
+Edit:
 
 ```
-gpt-session sync
-```
-
-### Autosync every N minutes
-
-```
-gpt-session autosync-on 30
-gpt-session autosync-off
-```
-
-### Version
-
-```
-gpt-session --version
+nano ~/.gpt_sessions/profile.txt
 ```
 
 ---
 
-## Redaction
+# Documentation
 
-Secret detection removes:
+Found in `/docs`:
 
-- password = value
-- passwd: value
-- secret: value
-- token: value
-- Authorization: Bearer XXXXX
-- api_key=XXXXXX
-
-Redacted output is saved in ~/.gpt_sessions alongside raw logs.
+- installation.md  
+- usage.md  
+- redaction.md  
+- autosync.md  
+- profile.md  
+- architecture.md  
 
 ---
 
-## Documentation
+# Architecture
 
-See the docs/ directory:
+See `/docs/architecture.md` for:
 
-- installation.md
-- usage.md
-- redaction.md
-- autosync.md
-- profile.md
-- architecture.md
-
----
-
-## Development
-
-```
-shellcheck gpt-session
-```
+- session management  
+- timing files  
+- redaction  
+- autosync loop  
+- OpenAI integration  
 
 ---
 
-## Contributing
+# Roadmap
 
-See contributing.md
+### v0.2.0  
+- Uninstaller  
+- Multiple profiles  
+- MacOS support  
+- Enhanced replay formatting  
+
+### v1.0  
+- Plugin system  
+- Local encryption  
+- Command insights engine  
 
 ---
 
-## Changelog
+# Contributing
 
-See changelog.md
+Pull requests welcome!  
+See `contributing.md`.
 
 ---
 
-## License
+# License
 
 MIT License.
 
 ---
 
-## Roadmap
+# FAQ
 
-- macOS installer
-- pipx wrapper
-- Homebrew formula
-- AUR package
-- Encrypted session storage
-- Web dashboard
-- Plugin system
+**Is anything uploaded automatically?**  
+No. Sync only occurs when you ask for it or enable autosync.
+
+**Does it leak secrets?**  
+No — redaction removes them before any sync.
+
+**Does it modify my shell?**  
+No. It only wraps `script`, `sed`, and the OpenAI CLI.
+
+**Does it work without OpenAI installed?**  
+Yes — logging and replay still work. Summaries and autosync won't.
 
 ---
 
-## Maintainer
-
-https://github.com/necr0bot
+# SentinelShell  
+Your AI terminal copilot — safe, local, hacker-friendly.
