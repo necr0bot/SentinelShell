@@ -1,66 +1,78 @@
-#!/usr/bin/env bash
+#!/bin/bash
+#
+# SentinelShell Installer
+# Installs the `gpt-session` utility and supporting files.
+#
+
 set -e
 
-echo "[+] SentinelShell installer starting..."
+INSTALL_DIR="/usr/local/bin"
+MAN_DIR="/usr/local/share/man/man1"
+SESS_DIR="$HOME/.gpt_sessions"
+SCRIPT_NAME="gpt-session"
+MANPAGE="man/gpt-session.1"
 
-# Detect package manager
-if command -v apt >/dev/null 2>&1; then
-    PKG="apt"
-elif command -v pacman >/dev/null 2>&1; then
-    PKG="pacman"
-elif command -v brew >/dev/null 2>&1; then
-    PKG="brew"
-else
-    PKG=""
+echo "[+] SentinelShell Installer"
+echo "[+] Installing gpt-session…"
+
+#############################################
+# Ensure required directories exist
+#############################################
+mkdir -p "$INSTALL_DIR"
+mkdir -p "$MAN_DIR"
+mkdir -p "$SESS_DIR"
+
+#############################################
+# Install script
+#############################################
+if [ ! -f "./$SCRIPT_NAME" ]; then
+    echo "[-] Error: $SCRIPT_NAME not found in current directory."
+    echo "    Run this installer from the SentinelShell root folder."
+    exit 1
 fi
 
-install_pkg() {
-    local pkgname="$1"
-    echo "[+] Installing package: $pkgname"
+echo "[+] Copying $SCRIPT_NAME → $INSTALL_DIR"
+sudo cp "./$SCRIPT_NAME" "$INSTALL_DIR/$SCRIPT_NAME"
+sudo chmod +x "$INSTALL_DIR/$SCRIPT_NAME"
 
-    if [[ "$PKG" == "apt" ]]; then
-        sudo apt update -y
-        sudo apt install -y "$pkgname"
-    elif [[ "$PKG" == "pacman" ]]; then
-        sudo pacman -Sy --noconfirm "$pkgname"
-    elif [[ "$PKG" == "brew" ]]; then
-        brew install "$pkgname"
-    else
-        echo "[!] Unknown package manager. Please install '$pkgname' manually."
-    fi
-}
-
-# Ensure pipx
-if ! command -v pipx >/dev/null 2>&1; then
-    echo "[+] pipx not found — installing..."
-    install_pkg pipx || echo "[!] pipx could not be auto-installed."
+#############################################
+# Install manpage
+#############################################
+if [ -f "$MANPAGE" ]; then
+    echo "[+] Installing manpage → $MAN_DIR"
+    sudo cp "$MANPAGE" "$MAN_DIR/gpt-session.1"
+    sudo gzip -f "$MAN_DIR/gpt-session.1"
 else
-    echo "[+] pipx already installed."
+    echo "[!] Warning: Manpage not found. Skipping."
 fi
 
-# Ensure OpenAI CLI via pipx
-if ! command -v openai >/dev/null 2>&1; then
-    echo "[+] Installing OpenAI CLI via pipx..."
-    pipx install openai || echo "[!] OpenAI CLI failed to install. Install manually with: pipx install openai"
+#############################################
+# Preserve profile if exists
+#############################################
+PROFILE_FILE="$SESS_DIR/profile.txt"
+
+if [ ! -f "$PROFILE_FILE" ]; then
+    echo "[+] Creating empty user profile: $PROFILE_FILE"
+    cat > "$PROFILE_FILE" << 'EOF'
+# SentinelShell Profile
+# Add preferences here (this file is synced with GPT during session logs).
+EOF
 else
-    echo "[+] OpenAI CLI already installed."
+    echo "[+] Existing profile detected. Leaving unchanged."
 fi
 
-# Ensure ripgrep
-if ! command -v rg >/dev/null 2>&1; then
-    echo "[+] Installing ripgrep..."
-    install_pkg ripgrep || echo "[!] Please install ripgrep manually."
-else
-    echo "[+] ripgrep already installed."
-fi
-
-# Ensure session directory exists
-mkdir -p ~/.gpt_sessions
-
-# Install gpt-session script
-echo "[+] Installing gpt-session to /usr/local/bin..."
-chmod +x gpt-session
-sudo cp gpt-session /usr/local/bin/
-
-echo "[✓] SentinelShell installation complete!"
-echo "Run: gpt-session start"
+#############################################
+# Final instructions
+#############################################
+echo ""
+echo "[+] Installation complete!"
+echo "[+] You can now run:"
+echo ""
+echo "    gpt-session --version"
+echo "    gpt-session start"
+echo "    gpt-session profile"
+echo ""
+echo "[+] Man page available via:"
+echo "    man gpt-session"
+echo ""
+echo "[✓] SentinelShell is ready."
