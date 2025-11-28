@@ -1,41 +1,145 @@
-.TH GPT-SESSION 1 "2025-11-28" "SentinelShell"
+.TH GPT-SESSION 1 "November 2025" "SentinelShell 0.1.0" "User Commands"
 
 .SH NAME
-gpt-session - AI-augmented terminal session recorder for pentesters
+gpt-session \- AI-assisted terminal session logger with autosync, redaction, and replay
 
 .SH SYNOPSIS
-gpt-session [command]
+.B gpt-session
+[\fIcommand\fP]
 
 .SH DESCRIPTION
-SentinelShell integrates OpenAI with Bash to record, summarize, redact, sync, and replay terminal sessions.
+The
+.B gpt-session
+command provides full terminal session logging, AI-powered summaries,
+redaction of sensitive data, managable autosync, replay support, and
+profile-based context for AI tools.
+
+Session logs are stored in:
+.IP
+~/.gpt_sessions/
+
+For each session, a log file and a timing file are generated using the
+.B script(1)
+and
+.B scriptreplay(1)
+tools.
+
+OpenAI integration is optional; SentinelShell functions without it.
 
 .SH COMMANDS
-.TP
-start
-Start logging a session.
 
 .TP
-stop
-Stop logging and generate an AI summary.
+.B start
+Begin a new terminal logging session. Creates:
+.br
+~/.gpt_sessions/<project>_<timestamp>.log
+.br
+~/.gpt_sessions/<project>_<timestamp>.time
 
 .TP
-sync
-Upload the session log to ChatGPT.
+.B stop
+Stop the running logging session. If OpenAI CLI is installed, an
+AI-generated summary is produced and saved as:
+.br
+~/.gpt_sessions/<log>.summary.md
 
 .TP
-autosync-on N
-Enable autosync every N minutes.
+.B sync [LOGFILE]
+Manually sync a session log to ChatGPT. If no logfile is provided, the
+most recent log is used. Sensitive data is automatically redacted.
 
 .TP
-autosync-off
+.B autosync-on [MINUTES]
+Enable background autosync every N minutes. Default: 30 minutes.
+Autosync only runs while a session is active.
+
+.TP
+.B autosync-off
 Disable autosync.
 
 .TP
-replay
-Replay the last recorded session using scriptreplay.
+.B autosync-status
+Display the current autosync status, including interval and PID.
+
+.TP
+.B replay
+Replay the most recent session using
+.B scriptreplay(1).
+Recreates the timing and output exactly as captured.
+
+.TP
+.B status
+Show whether a logging session is currently running.
+
+.TP
+.B profile
+Initialize or display the user profile stored in:
+.br
+~/.gpt_sessions/profile.txt
+
+.TP
+.B --version
+Display the installed SentinelShell version.
+
+.SH REDACTION
+Sensitive content is removed before logs are synced or summarized:
+
+.IP \(bu 2
+Passwords and secrets: "password=", "passwd=", "secret=", etc.
+.IP \(bu 2
+Bearer tokens
+.IP \(bu 2
+API keys (OPENAI_API_KEY, api_key=)
+.IP \(bu 2
+IPv4 addresses
+.IP \(bu 2
+Private key blocks (PEM)
 
 .SH FILES
-~/.gpt_sessions/
+.IP "~/.gpt_sessions/"
+Session logs, timing files, summaries, autosync data, profile.
+
+.IP "/usr/local/bin/gpt-session"
+Installed binary (main script).
+
+.IP "/usr/local/share/man/man1/gpt-session.1"
+Man page.
+
+.SH EXAMPLES
+
+.TP
+Start a new session:
+.RS
+\fBgpt-session start\fP
+.RE
+
+.TP
+Stop the session and generate a summary:
+.RS
+\fBgpt-session stop\fP
+.RE
+
+.TP
+Replay the previous session:
+.RS
+\fBgpt-session replay\fP
+.RE
+
+.TP
+Enable autosync every 10 minutes:
+.RS
+\fBgpt-session autosync-on 10\fP
+.RE
+
+.TP
+Initialize the user profile:
+.RS
+\fBgpt-session profile\fP
+.RE
 
 .SH AUTHOR
-necr0bot
+SentinelShell is developed and maintained by the open-source community.
+GitHub: https://github.com/necr0bot/SentinelShell
+
+.SH LICENSE
+MIT License. See the LICENSE file for details.
