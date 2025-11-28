@@ -1,6 +1,8 @@
 SentinelShell
 AI-Powered Terminal Session Logging, Redaction, Summaries & Syncing
 
+---------------------
+
 SentinelShell is a drop-in terminal enhancer that automatically:
 
 📜 Records your terminal session
@@ -17,10 +19,14 @@ SentinelShell is a drop-in terminal enhancer that automatically:
 
 Perfect for CTF writeups, cybersecurity labs, demos, documentation, education, and research.
 
+---------------------
+
 🚀 Features
 📼 Record full terminal sessions
 
 Uses script under the hood. No weird Tmux hacks.
+
+---------------------
 
 🧼 Real-time secret redaction
 
@@ -38,15 +44,18 @@ VPN IPs
 
 env vars
 
+---------------------
+
 🧠 AI summaries of your work
 
 At session end:
 
 gpt-session stop
 
-
 → Creates:
 session.log.summary.md
+
+---------------------
 
 🕹 Commands
 gpt-session start         # Begin logging
@@ -57,15 +66,17 @@ gpt-session sync          # Upload log via OpenAI CLI
 gpt-session autosync-on   # Auto-sync every N minutes
 gpt-session autosync-off  # Disable autosync
 
+---------------------
+
 📦 Installation
 curl -sSL https://raw.githubusercontent.com/necr0bot/SentinelShell/main/install.sh | bash
-
 
 Or manual:
 
 chmod +x gpt-session
 sudo mv gpt-session /usr/local/bin/
 
+---------------------
 
 Requires:
 
@@ -79,6 +90,8 @@ OpenAI CLI
 
 ripgrep
 
+---------------------
+
 🧪 Quick Test
 gpt-session start
 echo "password = hunter2"
@@ -90,10 +103,14 @@ Check redactions:
 
 cat ~/.gpt_sessions/<latest>.log.redacted
 
+---------------------
+
 🛠 Development
 git clone https://github.com/necr0bot/SentinelShell
 cd SentinelShell
 ./gpt-session --version
+
+---------------------
 
 🔒 Security
 
@@ -101,12 +118,15 @@ SentinelShell never transmits raw logs unless:
 
 gpt-session sync
 
+---------------------
 
 You remain in complete control.
 
 📄 License
 
 MIT License — free for personal + commercial.
+
+---------------------
 
 🗺 Roadmap
 
@@ -128,15 +148,22 @@ Web dashboard for logs
 
 Plugin system
 
+---------------------
+
 🛡 Maintainer
 
 necr0bot
 Sentinel of terminals. Hunter of secrets. Friend of AI.
 
+---------------------
+
 ⭐ Contributing
 
 See: contributing.md
 
-✔ Status
+---------------------
 
+✔ Status
 Stable — Ready for daily use.
+
+---------------------
