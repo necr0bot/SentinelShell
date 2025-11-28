@@ -5,6 +5,7 @@
 # Compatible with the Debian/Kali-patched "openai 2.x" CLI format:
 #   openai api chat.completions.create -m MODEL -g ROLE CONTENT [-g ROLE CONTENT ...]
 #
+# VERSION="0.1.0"
 
 SESS_DIR="$HOME/.gpt_sessions"
 PID_FILE="$SESS_DIR/session.pid"
@@ -12,6 +13,11 @@ AUTOSYNC_PID_FILE="$SESS_DIR/autosync.pid"
 PROFILE_FILE="$SESS_DIR/profile.txt"
 OPENAI_MODEL="gpt-4o-mini"
 mkdir -p "$SESS_DIR"
+
+if [[ "$1" == "--version" || "$1" == "-v" ]]; then
+    echo "gpt-session $VERSION"
+    exit 0
+fi
 
 
 ##############################################
