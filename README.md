@@ -59,11 +59,17 @@ session.log.summary.md
 
 🕹 Commands
 gpt-session start         # Begin logging
+
 gpt-session stop          # Stop and summarize
+
 gpt-session replay        # Replay the session
+
 gpt-session profile       # Generate ChatGPT context
+
 gpt-session sync          # Upload log via OpenAI CLI
+
 gpt-session autosync-on   # Auto-sync every N minutes
+
 gpt-session autosync-off  # Disable autosync
 
 ---------------------
